@@ -1,9 +1,9 @@
 open Library;;
 
 let dot_sparse_sparse vec1 vec2 =
-    Library.SparseVector.foldl vec1 0
+    Library.SparseMatrix.foldl vec1 0
         (fun _sum (i1, v1) ->
-            _sum + (Library.SparseVector.foldl vec2 0
+            _sum + (Library.SparseMatrix.foldl vec2 0
                  (fun product (i2, v2) ->
                     if i1 = i2 then
                         v1*v2
@@ -12,14 +12,14 @@ let dot_sparse_sparse vec1 vec2 =
 let dot_dense_sparse vec1 vec2 =
     Library.DenseMatrix.foldl vec1 0
         (fun _sum (i1, v1) ->
-            _sum + (Library.SparseVector.foldl vec2 0
+            _sum + (Library.SparseMatrix.foldl vec2 0
                  (fun product (i2, v2) ->
                     if i1 = i2 then
                         v1*v2
                     else product)))
 
 let dot_sparse_dense vec1 vec2 =
-    Library.SparseVector.foldl vec1 0
+    Library.SparseMatrix.foldl vec1 0
         (fun _sum (i1, v1) ->
             _sum + (Library.DenseMatrix.foldl vec2 0
                  (fun product (i2, v2) ->
@@ -37,7 +37,7 @@ let dot_dense_dense vec1 vec2 =
                     else product)))
 
 let printvec_sparse vec =
-    Library.SparseVector.foldl vec ()
+    Library.SparseMatrix.foldl vec ()
     (fun _ e ->
     match e with
     | (_, value) -> print_int value; print_string " ");
@@ -50,11 +50,15 @@ let printvec_dense vec =
     | (_, value) -> print_int value; print_string " ");
     print_string "\n";;
 
-let vec1 = Library.DenseMatrix.to_vector [1;2;4] in
-let vec2 = Library.DenseMatrix.to_vector [1;2;4] in
+let vec1 = Library.DenseMatrix.to_vector [1;2;0;4] in
+let vec2 = Library.DenseMatrix.to_vector [1;2;0;4] in
 print_int (dot_dense_dense vec1 vec2); print_string "\n";;
-let vec1 = Library.SparseVector.to_vector [1;2;4] in
-let vec2 = Library.SparseVector.to_vector [1;2;4] in
+let vec1 = Library.SparseMatrix.to_vector [1;2;0;4] in
+let vec2 = Library.SparseMatrix.to_vector [1;2;0;4] in
+print_int (Library.SparseMatrix.look vec1 0); print_string " ";
+print_int (Library.SparseMatrix.look vec1 1); print_string " ";
+print_int (Library.SparseMatrix.look vec1 2); print_string " ";
+print_int (Library.SparseMatrix.look vec1 3); print_string " ";
 print_int (dot_sparse_sparse vec1 vec2); print_string "\n";;
 
 let printmat_dense mat =
@@ -83,6 +87,16 @@ let multiply_dense_dense mat1 mat2 =
                     result_row@[dot_result]) in
             result_mat@[new_row]);;
 
+let multiply_sparse_sparse mat1 mat2 =
+        Library.SparseMatrix.foldcoll mat1 []
+        (fun result_mat (i, row_of_mat1) ->
+            let new_row = Library.SparseMatrix.foldrowl mat2 []
+                (fun result_row (j, col_of_mat2) ->
+                    let dot_result =
+                        dot_sparse_sparse row_of_mat1 col_of_mat2 in
+                    result_row@[dot_result]) in
+            result_mat@[new_row]);;
+
 let show_dense_dense mat1 mat2 =
         Library.DenseMatrix.foldcoll mat1 ()
         (fun _ (i, row_of_mat1) ->
@@ -94,6 +108,16 @@ let show_dense_dense mat1 mat2 =
                 printvec_dense col_of_mat2;
                 ));;
 
+let show_sparse_sparse mat1 mat2 =
+        Library.SparseMatrix.foldcoll mat1 ()
+        (fun _ (i, row_of_mat1) ->
+            Library.SparseMatrix.foldrowl mat2 ()
+            (fun _ (j, col_of_mat2) ->
+                print_int i; print_string "[i]: ";
+                printvec_sparse row_of_mat1;
+                print_int j; print_string "[j]: ";
+                printvec_sparse col_of_mat2;
+                ));;
 
 let mat1 = Library.DenseMatrix.to_matrix
     [[1;2;3;4];
@@ -104,5 +128,16 @@ let mat2 = Library.DenseMatrix.to_matrix
      [1;2;3];
      [1;2;3];
      [1;2;3]] in
-(* show_dense_dense mat1 mat2 *)
-printmat_list (multiply_dense_dense mat1 mat2)
+printmat_list (multiply_dense_dense mat1 mat2);;
+
+let mat1 = Library.SparseMatrix.to_matrix
+    [[1;0;3;4];
+     [1;2;0;4];
+     [1;0;0;0]] in
+let mat2 = Library.SparseMatrix.to_matrix
+    [[1;0;3];
+     [1;2;3];
+     [0;2;0];
+     [0;2;3]] in
+printmat_list (multiply_sparse_sparse mat1 mat2);;
+(* show_sparse_sparse mat1 mat2;; *)
