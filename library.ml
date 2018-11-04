@@ -123,7 +123,6 @@ module SparseMatrix: Matrix =
             if h = 0 then to_matrix_aux0 t (idx + 1) row_num row_length
             else (row_num, idx, h) :: (to_matrix_aux0 t (idx + 1) row_num row_length)
     let rec to_matrix_aux1 (m:int list list) (idx:int) (row_length : int): (int * int * int) list =
-        print_string "row_length = "; print_int row_length; print_string "\n";
         match (List.fold_left (fun x e ->
             match x with | (result, idx) ->
             (result@(to_matrix_aux0 e 0 idx row_length), idx + 1)) ([], 0) m) with
