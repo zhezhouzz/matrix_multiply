@@ -202,7 +202,7 @@ let mat1 =
      [1;0;0;0]] in
 let mat2 =
     [[1;0;3];
-     [1;0;2];
+     [1;0;4];
      [0;0;0];
      [0;0;4]] in
 let if_sparse_mat1 = if_sparse mat1 in
@@ -212,19 +212,23 @@ match (if_sparse_mat1, if_sparse_mat2) with
     let mat1'= Library.SparseMatrix.to_matrix mat1 in
     let mat2'= Library.SparseMatrix.to_matrix mat2 in
     print_string "SparseMatrix x SparseMatrix\n";
+    printmat_sparse mat1'; printmat_sparse mat2';
     printmat_sparse (multiply_sparse_sparse_sparse mat1' mat2')
 | (true, false) ->
     let mat1'= Library.SparseMatrix.to_matrix mat1 in
     let mat2'= Library.DenseMatrix.to_matrix mat2 in
     print_string "SparseMatrix x DenseMatrix\n";
+    printmat_sparse mat1'; printmat_dense mat2';
     printmat_dense (multiply_sparse_dense_dense mat1' mat2')
 | (false, true) ->
     let mat1'= Library.DenseMatrix.to_matrix mat1 in
     let mat2'= Library.SparseMatrix.to_matrix mat2 in
     print_string "DenseMatrix x SparseMatrix\n";
+    printmat_dense mat1'; printmat_sparse mat2';
     printmat_dense (multiply_dense_sparse_dense mat1' mat2')
 | (false, false) ->
     let mat1'= Library.DenseMatrix.to_matrix mat1 in
     let mat2'= Library.DenseMatrix.to_matrix mat2 in
     print_string "DenseMatrix x DenseMatrix\n";
+    printmat_dense mat1'; printmat_dense mat2';
     printmat_dense (multiply_dense_dense_dense mat1' mat2');;

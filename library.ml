@@ -148,13 +148,15 @@ module SparseMatrix: Matrix =
                 if k = i then (rownum_list, Some k)
                 else (rownum_list@[i], Some i)) ([], None) m) with | (rownum_list, _) -> rownum_list
 
+    let rec foldcoll_aux (m : (int*int*int) list) (start: 'b) (f: 'b -> int * SparseVector.vector -> 'b) (dim0: int) (dim1: int) (index:int) : 'b=
+        if index = dim0 then start
+        else let row = get_row m index dim1 in
+             let start' = f start (index, row) in
+             foldcoll_aux m start' f dim0 dim1 (index + 1)
+
     let foldcoll (m : matrix) (start: 'b) (f: 'b -> int * SparseVector.vector -> 'b) : 'b =
-        match m with | (m', (_, dim1)) ->
-        let rownum_list = get_rownum_list m' in
-        match (List.fold_left (fun start row_num ->
-            match start with | (idx, start') ->
-            (idx + 1, f start' (idx, (get_row m' idx dim1)))) (0, start) rownum_list) with
-        | (_, result) -> result
+        match m with | (m', (dim0, dim1)) ->
+            (foldcoll_aux m' start f dim0 dim1 0)
 
     let rec matlook_aux (m' : (int*int*int) list) (i: int) (j:int) : int =
         match m' with
