@@ -94,7 +94,7 @@ let printmat_sparse mat =
     match e with
     | (i, value) -> print_int i; print_string ": "; printvec_sparse value);;
 
-let rec printvec_list vec =
+(* let rec printvec_list vec =
     List.map (fun e ->
         print_int e; print_string " ") vec;
     print_string "\n";;
@@ -102,7 +102,7 @@ let rec printvec_list vec =
 let rec printmat_list mat =
     match mat with
     | [] -> ()
-    | h :: t -> printvec_list h; printmat_list t;;
+    | h :: t -> printvec_list h; printmat_list t;; *)
 
 let multiply_dense_dense_dense mat1 mat2 =
         Library.DenseMatrix.to_matrix (Library.DenseMatrix.foldcoll mat1 []
