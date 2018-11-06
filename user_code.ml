@@ -1,12 +1,5 @@
 open Library;;
 
-let if_sparse_aux l =
-    List.fold_left (fun counter e ->
-        match counter with
-    | (num, nonzero) ->
-        if e = 0 then (num + 1, nonzero)
-        else (num + 1, nonzero + 1)) (0, 0) l
-
 let if_sparse m =
     let if_sparse_aux = fun l ->
         List.fold_left (fun counter e ->
